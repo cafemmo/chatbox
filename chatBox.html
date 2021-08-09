@@ -1,0 +1,124 @@
+<!-- Start Chat Box -->
+
+<script src="https://www.gstatic.com/firebasejs/8.8.0/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.8.0/firebase-database.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.13.0/moment.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/cafemmo/chatbox/1.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/cafemmo/chatbox/1.css">
+<script>
+var config = {
+	apiKey: "",
+	authDomain: "",
+	databaseURL: "",
+	storageBucket: ""
+};
+firebase.initializeApp(config);
+</script>
+<script>
+
+const configCHAT = {
+  USER: {
+    id: '{$visitor.user_id}',
+    name: '{$visitor.username}',
+    group: '{$visitor.user_group_id}',
+    ip: '{$_SERVER.REMOTE_ADDR}'
+  },
+   <!-- USER: { -->
+    <!-- id: '1', -->
+    <!-- name: '2', -->
+    <!-- group: '3', -->
+    <!-- ip: '4' -->
+  <!-- }, -->
+  OPTIONS: {
+    homepageUrl: '{xen:raw '$xenOptions.boardUrl'}',
+	//homepageUrl: 'http://google.com',
+    firebaseUrl: 'https://chatbox-87d43-default-rtdb.asia-southeast1.firebasedatabase.app',
+    maxMessages: '50'
+  }
+};
+
+"" !== configCHAT.USER.name && jQuery(document).ready(function(c) {
+	
+
+		h = c("#j2team_chatbox_messages"),
+		f = null;
+	c("#j2team_chatbox_form").submit(function(b) {
+		var a = c("#j2team_chatbox_input"),
+			d = a.val();
+		if (d) {
+			if (null !== f && f === d) return;
+			var timeStampInMs = window.performance && window.performance.now && window.performance.timing && window.performance.timing.navigationStart ? window.performance.now() + window.performance.timing.navigationStart : Date.now();
+			firebase.database().ref('chatBox/data').push({
+				user: configCHAT.USER,
+				text: d,
+				time: timeStampInMs
+			});
+			a.val("").focus();
+			f = d
+		}
+		b.preventDefault()
+	});
+	var k = parseInt(configCHAT.OPTIONS.maxMessages);
+	var fire = '11';
+	firebase.database().ref('chatBox/data').limitToLast(k).on("child_added", function(b) {
+		var info = b.val();
+		var a = info;
+		b = configCHAT.USER.name;
+		<!-- var d = XBBCODE.process({ -->
+				<!-- text: a.text -->
+			<!-- }), -->
+			var text = info.text,
+			f = "[" + moment(info.time).format("DD-MM hh:mm A") + "] ", 
+			g = c('<li style="display:none">'), 
+			a = c('<a href="' + configCHAT.OPTIONS.homepageUrl + "/members/" + configCHAT.USER.id + '/" target="_blank" class="username" dir="auto"></a>'),
+			fire = c('<span class="smallfont time"></span>');
+			//Firebase = c('<span class="smallfont time"></span>');
+		a.text(info.user.name);
+		<!-- Firebase.text(f); -->
+		g.html(": " + text).prepend(a[0]); 
+		g.prepend(fire);
+		<!-- g.emoticonize(); -->
+		h.prepend(g);
+		b = h.find("li"); 
+		b.first().fadeIn("fast"); 
+		b.length > k && b.last().remove() 
+	})
+});
+
+
+</script>
+
+<ol class="nodeList sectionMain">
+  <li class="node category level_1">
+    <div class="nodeInfo categoryNodeInfo categoryStrip">
+      <div class="categoryText">
+        <h3 class="nodeTitle">Chatbox</h3>
+      </div>
+    </div>
+    <div id="j2team_chatbox_wrapper">
+      <form method="post" action="javascript:void(0);" id="j2team_chatbox_form">
+        <div>
+          <input type="text" id="j2team_chatbox_input" placeholder="Tin nhắn..." required>
+        </div>
+        <div>
+          <button type="submit" class="button">Gửi</button>
+          <!-- <input style="font-weight: bold;" type="button" name="hbold" value="B" class="button" onclick="fcb_upstyle('b');"> -->
+          <!-- <input style="font-style: italic;" type="button" name="hitalic" value="I" class="button" onclick="fcb_upstyle('i');"> -->
+          <!-- <select onchange="fcb_upstyle('color');" name="hcolor"> -->
+            <!-- <option value="">Chọn màu</option> -->
+            <!-- <option style="background: Gold;" value="Gold">Gold</option><option style="background: Yellow;" value="Yellow">Yellow</option><option style="background: Khaki;" value="Khaki">Khaki</option><option style="background: Orange;" value="Orange">Orange</option><option style="background: LightYellow;" value="LightYellow">LightYellow</option><option style="background: LightPink;" value="LightPink">LightPink</option><option style="background: Salmon;" value="Salmon">Salmon</option><option style="background: LightSeaGreen;" value="LightSeaGreen">LightSeaGreen</option><option style="background: LawnGreen;" value="LawnGreen">LawnGreen</option><option style="background: Lime;" value="Lime">Lime</option><option style="background: MediumSeaGreen;" value="MediumSeaGreen">MediumSeaGreen</option><option style="background: LightPink;" value="LightPink">LightPink</option><option style="background: DeepPink;" value="DeepPink">DeepPink</option><option style="background: Tomato;" value="Tomato">Tomato</option><option style="background: Orchid;" value="Orchid">Orchid</option><option style="background: Pink;" value="Pink">Pink</option><option style="background: Cyan;" value="Cyan">Cyan</option><option style="background: Magenta;" value="Magenta">Magenta</option><option style="background: aqua;" value="aqua">aqua</option><option style="background: DodgerBlue;" value="DodgerBlue">DodgerBlue</option><option style="background: LightSkyBlue;" value="LightSkyBlue">LightSkyBlue</option><option style="background: LightBlue;" value="LightBlue">LightBlue</option><option style="background: White;" value="White">White</option> -->
+          <!-- </select> -->
+          <!-- <input type="button" value="Smile" class="button" onclick="smiliepopup();"> -->
+          <!-- <input type="button" value="Lưu trữ" class="button" onclick="archivepage();"> -->
+        </div>
+      </form>
+      <div class="framesb" id="j2team_chatbox_frame">
+        <ul id="j2team_chatbox_messages"></ul>
+      </div>
+    </div>
+    <div class="xb_catBottom_center"></div>
+  </li>
+</ol>
+
+<!-- Start Chat Box -->
